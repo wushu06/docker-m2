@@ -1,0 +1,4 @@
+FROM nginx:1.8
+RUN usermod -u 1000 www-data
+EXPOSE 80
+EXPOSE 443

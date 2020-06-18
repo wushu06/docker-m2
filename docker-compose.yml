@@ -1,0 +1,40 @@
+version: "3"
+services:
+    nginx:
+        build:
+            context: ./.dockerfiles
+            dockerfile: Dockerfile.nginx
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - ./.logs/nginx:/var/log/nginx
+            - ./.dockerfiles/nginx/ssl:/etc/nginx/ssl
+            - ./.dockerfiles/nginx/includes:/etc/nginx/includes
+            - ./.dockerfiles/nginx/sites-enabled:/etc/nginx/conf.d
+            - ./:/var/www/html
+        links:
+            - php7-fpm
+    php7-fpm:
+        build:
+            context: ./.dockerfiles
+            dockerfile: Dockerfile.php7-fpm
+        ports:
+            - 9000
+        volumes:
+            - ./:/var/www/html
+        links:
+            - mysql
+
+    mysql:
+        image: percona:latest
+        ports:
+            - "3306:3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: magento
+            MYSQL_DATABASE: magento
+            MYSQL_USER: magento
+            MYSQL_PASSWORD: magento
+        volumes:
+            - ./.mysql:/var/lib/mysql
+            - ./.dockerfiles/mysql/percona-server.conf.d:/etc/mysql/percona-server.conf.d
