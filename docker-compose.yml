@@ -25,6 +25,8 @@ services:
             - ./:/var/www/html
         links:
             - mysql
+        environment:
+            PHP_XDEBUG_ENABLED: 0
 
     mysql:
         image: percona:latest
@@ -38,3 +40,26 @@ services:
         volumes:
             - ./.mysql:/var/lib/mysql
             - ./.dockerfiles/mysql/percona-server.conf.d:/etc/mysql/percona-server.conf.d
+
+    mailcatcher:
+        build:
+            context: ./.dockerfiles
+            dockerfile: Dockerfile.mailcatcher
+        ports:
+            - "1080:1080"
+
+    elasticsearch:
+        build:
+          context: ./.dockerfiles
+          dockerfile: Dockerfile.elasticsearch
+        environment:
+            - bootstrap.memory_lock=true
+            - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+        ulimits:
+            memlock:
+                soft: -1
+                hard: -1
+        volumes:
+            - ./.elasticsearch:/usr/share/elasticsearch/data
+        ports:
+            - "9200:9200"

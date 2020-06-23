@@ -8,3 +8,13 @@ map $http_host $mage_type {
 hostnames;
     default "";
 }
+
+map $http_x_forwarded_proto $fe_https {
+    default off;
+    https on;
+}
+
+map $http_x_forwarded_proto $fe_https_port {
+    default 80;
+    https 443;
+}
